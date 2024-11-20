@@ -54,6 +54,9 @@ bool createThread(_fn fn, const char name[], uint8_t priority, uint32_t stackByt
 void restartThread(_fn fn);
 void stopThread(_fn fn);
 void setThreadPriority(_fn fn, uint8_t priority);
+void* MallocWrapper(uint32_t SizeInBytes);
+void* PIDgetter(void);
+void KillThread(void* arg);
 
 void yield(void);
 void sleep(uint32_t tick);
@@ -61,8 +64,7 @@ void lock(int8_t mutex);
 void unlock(int8_t mutex);
 void wait(int8_t semaphore);
 void post(int8_t semaphore);
-void* MallocWrapper(uint32_t SizeInBytes);
-void* PIDgetter(void);
+
 
 void systickIsr(void);
 void pendSvIsr(void);

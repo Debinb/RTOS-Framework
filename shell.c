@@ -43,17 +43,11 @@ void ipcs()
 void kill(uint32_t pid)         //StopThread()
 {
     stopThread((_fn)pid);
-    char str[100];
-    IntToStr(pid, str);
-    putsUart0(str);
-    putsUart0(" killed\n");
 }
 
 void pkill(char* proc_name)     //StopThread()
 {
     stopThread((_fn)proc_name);
-    putsUart0(proc_name);
-    putsUart0(" killed\n");
 }
 
 void preempt(bool on)
@@ -95,18 +89,10 @@ void pi(bool on)        //Priority Inheritance -- not needed
     }
 }
 
+
 void pidof(char* name)
 {
     __asm("  SVC #11");
-//    char str[15];
-//
-//    uint32_t pidValue = ReadFromR1();
-//
-//    IntToStr(pidValue, str);
-//    putsUart0(name);
-//    putsUart0(" launched. \nPID: ");
-//    putsUart0(str);
-//    putcUart0('\n');
 }
 
 
@@ -117,7 +103,7 @@ void shell(void)
     {
         USER_DATA data;
         bool valid = false;
-        char proc_list[3][15] = {"idle", "wait", "update"};
+        char proc_list[10][20] = {"Idle", "LengthyFn", "Flash4Hz", "OneShot", "ReadKeys", "Debounce", "Important", "Uncoop", "Errant", "Shell"};
 
         if(kbhitUart0())
         {
@@ -272,14 +258,12 @@ void shell(void)
                 {
                     char* proc_input = getFieldString(&data, 0);
                     uint8_t i = 0;
-                    for(i = 0; i < 3; i++)
+                    for(i = 0; i < 10; i++)
                     {
                         if(cmpStr(proc_input, proc_list[i]) == 0)  //compare the user input with the array list
                         {
                             valid = true;
-                            putsUart0(proc_input);
-                            putsUart0(" running.\n");
-                            setPinValue(PORTF, 3, 1);
+                            restartThread((_fn)proc_input);
                         }
                     }
                 }
@@ -291,10 +275,9 @@ void shell(void)
 
             if(!valid)
             {
-                putsUart0("Invalid command.\n");
-                setPinValue(PORTF, 3, 0);
+                putsUart0("Invalid command/process. Try again!\n");
             }
-            putsUart0("\n\n>");
+            putsUart0("\n\nRTOS>");
         }
 
         yield();

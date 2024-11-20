@@ -120,6 +120,8 @@ void mpuFaultIsr(void)
     //Clears MPU fault pending bit
     NVIC_SYS_HND_CTRL_R &= ~(NVIC_SYS_HND_CTRL_MEMP);
 
+    KillThread(pid);
+
     //Trigger PendSV ISR call
     NVIC_INT_CTRL_R |= NVIC_INT_CTRL_PEND_SV;
 

@@ -30,6 +30,7 @@
 //#define GREEN_LED  PORTA,4 // off-board green LED
 
 #define BLUE_LED PORTF,2
+#define BOARD_GREEN_LED PORTF,3
 #define RED_LED PORTA,2
 #define ORANGE_LED PORTA,3
 #define YELLOW_LED PORTA,4
@@ -68,6 +69,7 @@ void initHw(void)
     selectPinPushPullOutput(ORANGE_LED);
     selectPinPushPullOutput(YELLOW_LED);
     selectPinPushPullOutput(GREEN_LED);
+    selectPinPushPullOutput(BOARD_GREEN_LED);
 
     //Setting Push buttons as input
     selectPinDigitalInput(PB0);
@@ -85,6 +87,8 @@ void initHw(void)
     enablePinPullup(PB4);
     enablePinPullup(PB5);
 
+    //Enable Timer Clock
+    SYSCTL_RCGCTIMER_R |= SYSCTL_RCGCTIMER_R1;
 
     //System Handler Control enables Usage Fault Handler and Bus Fault Handler.
     //NVIC Configuration Control traps DIV0 and unaligned errors
@@ -282,4 +286,23 @@ void important(void)
         setPinValue(BLUE_LED, 0);
         unlock(resource);
     }
+}
+
+void LedTimer(void)
+{
+    // Configure Timer 1 as the time base
+     TIMER1_CTL_R &= ~TIMER_CTL_TAEN;                     // turn-off timer before reconfiguring
+     TIMER1_CFG_R = TIMER_CFG_32_BIT_TIMER;               // configure as 32-bit timer (A+B)
+     TIMER1_TAMR_R = TIMER_TAMR_TAMR_PERIOD;              // configure for periodic mode (count down)
+     TIMER1_TAILR_R = 40000000;                          // Timer Ticks # = Seconds x Clock Freq.
+     TIMER1_IMR_R = TIMER_IMR_TATOIM;                     // turn-on interrupts for timeout in timer module
+     TIMER1_CTL_R |= TIMER_CTL_TAEN;                      // turn-on timer
+     NVIC_EN0_R = 1 << (INT_TIMER1A-16);                  // turn-on interrupt 37 (TIMER1A)
+     setPinValue(BOARD_GREEN_LED, 1);
+}
+
+void TimerIsr(void)
+{
+    setPinValue(BOARD_GREEN_LED, 0);
+
 }
