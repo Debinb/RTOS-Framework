@@ -83,6 +83,7 @@ int main(void)
     ok &= createThread(shell, "Shell", 12, 4096);
 
     // TODO: Add code to implement a periodic timer and ISR
+    LedTimer();
 
     // Start up RTOS
     if (ok)

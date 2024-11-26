@@ -33,4 +33,6 @@ void IntToStr(uint32_t num, char* str);
 bool isInteger(char* str);
 void IntToHex(uint32_t num, char* str);
 void StringCopy(char* source,  char* destination);
+int StringLen(char* str);
+void DecimalPlacer(char* str);
 #endif /* GETINPUT_H_ */

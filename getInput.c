@@ -266,3 +266,36 @@ void StringCopy( char* source,  char* destination)
     *destination = '\0';
 }
 
+int StringLen(char* str)
+{
+    uint32_t stringLength = 0;
+    while(str[stringLength] != 0)
+    {
+        stringLength++;
+    }
+    return stringLength;
+}
+
+void DecimalPlacer(char* str)
+{
+    uint8_t length = StringLen(str);
+
+    int i = 0;
+    if (length == 1)
+    {
+        for(i = length; i >= 0; i--)
+        {
+            str[i + 1] = str[i];
+        }
+        str[0] = '0';
+        length++;
+    }
+
+    for (i = length; i >= length - 2; i--)
+    {
+        str[i + 1] = str[i];
+    }
+
+    str[length - 2] = '.';
+    str[length + 1] = '\0';
+}

@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "tm4c123gh6pm.h"
-#include "getInput.h"
+
 #include "gpio.h"
 #include "uart0.h"
 #include "shell.h"
@@ -24,20 +24,271 @@
 #include "sp.h"
 
 // REQUIRED: Add header files here for your strings functions, ...
+#include "getInput.h"
+
 
 //-----------------------------------------------------------------------------
 // Subroutines
 //-----------------------------------------------------------------------------
 
+void meminfo()
+{
+    ExtractTCB showTCB[MAX_TASKS];
+    getTCBinfo(showTCB);
+
+    putsUart0("-------------------------------------------\n");
+    putsUart0("| Prio | Process Name |  Address   | Size  \n");
+    putsUart0("-------------------------------------------\n");
+
+    uint8_t i,j = 0;
+    char info[15];
+    for(i = 0; i < MAX_TASKS; i++)
+    {
+        if(showTCB[i].state != 1)
+        {
+            if(showTCB[i].ThreadSize == 0)  // For not displaying empty values
+            {
+                break;
+            }
+
+
+            putsUart0("|  ");
+            IntToStr(showTCB[i].priority,info);
+            putsUart0(info);
+            for (j = StringLen(info); j < 4; j++)
+            {
+                putsUart0(" ");
+            }
+            //Process name
+            putsUart0("| ");
+            putsUart0(showTCB[i].name);
+            for (j = StringLen(showTCB[i].name); j < 11; j++)
+            {
+                putsUart0(" ");
+            }
+
+            //Base Address
+            putsUart0("  | ");
+            IntToHex((uint32_t)showTCB[i].BaseAddr, info);
+            putsUart0("0x");
+            putsUart0(info);
+
+            //Thread Size
+            putsUart0(" | ");
+            IntToStr(showTCB[i].ThreadSize, info);
+            putsUart0(info);
+            for (j = StringLen(info); j < 5; j++)
+            {
+                putsUart0(" ");
+            }
+            putsUart0("B\n");
+        }
+    }
+}
 
 void ps()
 {
-    putsUart0("PS called.\n");
+    ExtractTCB showTCB[MAX_TASKS];
+    getTCBinfo(showTCB);
+
+    putsUart0("--------------------------------------------------------------------\n");
+    putsUart0("|  PID  | Process Name |  CPU%  |        State         | Blocked By  \n");
+    putsUart0("--------------------------------------------------------------------\n");
+
+    uint8_t i,j,k = 0;
+    char info[15];
+    for(i = 0; i < MAX_TASKS; i++)
+    {
+        if(showTCB[i].ThreadSize == 0)
+        {
+            break;
+        }
+        if (showTCB[i].pid == showTCB[i+1].pid) //remove extra lengthyfn
+        {
+            i++;
+            k = 1;
+        }
+
+        //PID
+        putsUart0("| ");
+        IntToStr(showTCB[i].pid, info);
+        putsUart0(info);
+        for(j = StringLen(info); j < 6; j++)
+        {
+            putsUart0(" ");
+        }
+
+        //PROCESS NAME
+        putsUart0("| ");
+        putsUart0(showTCB[i].name);
+        for(j = StringLen(showTCB[i].name); j < 10; j++)
+        {
+            putsUart0(" ");
+        }
+        putsUart0("   | ");
+
+        //CPU TIME
+        if(showTCB[i].CPU_TIME == 0)
+        {
+            putsUart0("0.00");
+            putsUart0("% ");   //For cpu time - change later
+
+            for(j = StringLen(info); j < 6; j++)
+            {
+                putsUart0(" ");
+            }
+            putsUart0("|");
+
+        }
+        else
+        {
+            IntToStr(showTCB[i].CPU_TIME, info);
+            DecimalPlacer(info);
+            putsUart0(info);
+
+            putsUart0("% ");   //For cpu time - change later
+
+            for(j = StringLen(info); j < 5; j++)
+            {
+                putsUart0(" ");
+            }
+            putsUart0("|");
+
+        }
+
+        //PROCESS STATE
+        char* CurrentState;
+        switch(showTCB[i].state)
+        {
+        case 1:
+            CurrentState = "STOPPED";
+            break;
+        case 2:
+            CurrentState = "READY";
+            break;
+        case 3:
+            CurrentState = "DELAYED";
+            break;
+        case 4:
+            CurrentState = "BLOCKED BY MUTEX";
+            break;
+        case 5:
+            CurrentState = "BLOCKED BY SEMAPHORE";
+            break;
+        }
+        putsUart0(CurrentState);
+        for (j = StringLen(CurrentState); j < 20; j++)
+        {
+            putsUart0(" ");
+        }
+        putsUart0(" | ");
+
+        //BLOCKED BY
+        if(CurrentState == "BLOCKED BY MUTEX")
+        {
+            putsUart0(showTCB[showTCB[i].LockedBy + k].name);
+        }
+        putsUart0("\n");
+    }
 }
 
 void ipcs()
 {
-    putsUart0("IPCS called.\n");
+    ExtractMutexSema Status[4];
+    getMutexSemaInfo(Status);
+
+    char info[20];
+    char proc_list[10][20] = {"Idle", "LengthyFn", "Flash4Hz", "OneShot", "ReadKeys", "Debounce", "Important", "Uncoop", "Errant", "Shell"};
+    char sema_list[3][12] = {"keyPressed","keyReleased","flashReq"};
+
+    putsUart0("\n--------------------Mutex Status--------------------\n\n");
+    if(Status[0].lock == 1)
+    {
+        putsUart0("Resource locked By:   ");
+        putsUart0(proc_list[Status[0].MutexLockedBy]);
+
+        putsUart0("\nMutex Queue Size:     ");
+        IntToStr(Status[0].MutexQueueSize, info);
+        putsUart0(info);
+
+        putsUart0("\nMutex Queue:      [0] ");
+        if((Status[0].MutexProcessQueue[0] == 0) && (Status[0].MutexProcessQueue[1] == 0))
+        {
+            putsUart0("-- \n                  [1] --\n");
+        }
+        else if((Status[0].MutexProcessQueue[0] > 0) && (Status[0].MutexProcessQueue[1] == 0))
+        {
+            putsUart0(proc_list[Status[0].MutexProcessQueue[0]]);
+            putsUart0("\n                  [1] --");
+        }
+        else
+        {
+            putsUart0(proc_list[Status[0].MutexProcessQueue[0]]);
+            putsUart0("\n                  [1] ");
+            putsUart0(proc_list[Status[0].MutexProcessQueue[1]]);
+        }
+    }
+    else
+    {
+        putsUart0("All mutexes are free.\n");
+    }
+
+    putsUart0("\n\n\n------------------Semaphore Status------------------\n\n");
+
+    uint8_t i = 0;
+    for(i = 1; i < 4; i++)
+    {
+        putsUart0("[");
+        IntToStr(i-1, info);
+        putsUart0(info);
+        putsUart0("]");
+        putsUart0(sema_list[i-1]);
+        putsUart0(":");
+
+        if(Status[i].SemaQueue[0] > 0)
+        {
+            putsUart0("\tResource Counts:  \t");
+            IntToStr(Status[i].SemaCount, info);
+            putsUart0(info);
+            putsUart0("\n");
+
+            putsUart0("\t\tSemaphore Queue Size:  \t");
+            IntToStr(Status[i].SemaQueueSize, info);
+            putsUart0(info);
+            putsUart0("\n");
+
+            putsUart0("\t\tSemaphore Queue:\t[0] ");
+            if(Status[i].SemaQueue[1] == 0)
+            {
+                putsUart0(proc_list[Status[i].SemaQueue[0]]);
+                putsUart0("\n\t\t\t\t\t[1] --");
+            }
+            else
+            {
+                putsUart0(proc_list[Status[i].MutexProcessQueue[0]]);
+                putsUart0("\n\t\t\t\t\t[1] ");
+                putsUart0(proc_list[Status[i].MutexProcessQueue[1]]);
+            }
+            putsUart0("\n\n");
+        }
+        else
+        {
+            putsUart0("\tResource Counts:  \t");
+            IntToStr(Status[i].SemaCount, info);
+            putsUart0(info);
+            putsUart0("\n");
+
+            putsUart0("\t\tSemaphore Queue Size:\t");
+            IntToStr(Status[i].SemaQueueSize, info);
+            putsUart0(info);
+            putsUart0("\n");
+
+            putsUart0("\t\tSemaphore Queue:\t[0]");
+            putsUart0(" -- \n\t\t\t\t\t[1] --\n");
+            putsUart0("\n");
+        }
+    }
+
 }
 
 void kill(uint32_t pid)         //StopThread()
@@ -250,6 +501,12 @@ void shell(void)
                     valid = true;
                     pidof(proc_name);
                 }
+            }
+
+            else if(isCommand(&data, "meminfo", 0))
+            {
+                valid = true;
+                meminfo();
             }
 
             else
