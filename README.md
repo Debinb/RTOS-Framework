@@ -9,12 +9,19 @@ A custom RTOS framework for the TM4C MCU which includes custom implementation of
 
   
 ## Shell Interface
-Meminfo: Displays thread priority, name, memory address and memory size.
+-`reboot`: Reboots the TM4C MCU. 
+-`kill pid`: Kill a thread using its PID.
+-`pkill threadname`: Kill a thread using its thread name.
+-`preempt on|off`: Toggle preemption using ON or OFF
+-`sched rr|prio`: Toggle between Round-robin scheduling (_sched rr_) or priority scheduling (_sched prio_). 
+-`pidof x`: Gets the pid of a thread by typing the thread name.
+-`threadname`: Restarts the thread if it is stopped.
+-`meminfo`: Displays thread priority, name, memory address and memory size.
 <p align = center> <img src = "Documentation/meminfo.png" width="300" > </p>
 
-Ipcs: Displays the status of the mutexes and semaphores.
+-`ipcs`: Displays the status of the mutexes and semaphores.
 <p align = center> <img src = "Documentation/ipcs.png" width="300" > </p>
 
-Ps: Displays the thread PID, CPU usage and its state.
+-`ps`: Displays the thread PID, CPU usage and its state.
 <p align = center> <img src = "Documentation/ps_command.png" width="500" ></p>
 
