@@ -9,14 +9,12 @@ A custom RTOS framework for the TM4C MCU which includes custom implementation of
 
   
 ## Shell Interface
-> .Meminfo: Displays thread priority, name, memory address and memory size.
+Meminfo: Displays thread priority, name, memory address and memory size.
 <p align = center> <img src = "Documentation/meminfo.png" width="500" > </p>
 
+Ipcs: Displays the status of the mutexes and semaphores.
+<p align = center> <img src = "Documentation/ipcs.png" width="500" > </p>
 
-<body>
-<p align = center> Ipcs shows the status of the mutex and semaphores <img src = "Documentation/ipcs.png" width="500" > </p>
-</body>
+Ps: Displays the thread PID, CPU usage and its state.
+<p align = center> <img src = "Documentation/ps_command.png" width="500" ></p>
 
-<body>
-<p align = center>  Ps displays the thread PID, CPU usage and the state<img src = "Documentation/ps_command.png" width="500" ></p>
-</body>
