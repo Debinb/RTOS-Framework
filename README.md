@@ -17,9 +17,9 @@ A custom RTOS framework for the TM4C MCU which includes custom implementation of
 - `pidof x`: Gets the pid of a thread by typing the thread name.
 - `threadname`: Restarts the thread if it is stopped.
 - `meminfo`: Displays thread priority, name, memory address and memory size.
-<p align = center> <img src = "Documentation/meminfo.png" width="300" > </p>
+  <p align = center> <img src = "Documentation/meminfo.png" width="300" > </p>
 - `ipcs`: Displays the status of the mutexes and semaphores.
-<p align = center> <img src = "Documentation/ipcs.png" width="300" > </p>
+  <p align = center> <img src = "Documentation/ipcs.png" width="300" > </p>
 - `ps`: Displays the thread PID, CPU usage and its state.
-<p align = center> <img src = "Documentation/ps_command.png" width="500" ></p>
+  <p align = center> <img src = "Documentation/ps_command.png" width="500" ></p>
 
