@@ -11,9 +11,11 @@ A custom RTOS framework for the TM4C MCU which includes custom implementation of
 ## Shell Interface
 <p align = center>
 <img src = "Documentation/meminfo.png" width="500" >
- <p align="center"> <b> Meminfo displays thread priority, thread name, thread memory address and memory size </b> </p>
+ <p align="center"> Meminfo displays thread priority, thread name, thread memory address and memory size </p>
 </p>
 
+
+ 
 <p align = center>
 <img src = "Documentation/ipcs.png" width="500" >
 </p>
