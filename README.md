@@ -14,15 +14,9 @@ A custom RTOS framework for the TM4C MCU which includes custom implementation of
 </body>
 
 <body>
-<p align = center>
-<img src = "Documentation/ipcs.png" width="500" >
-  <p align="center"> Ipcs shows the status of the mutex and semaphores </p>
-</p>
+<p align = center> Ipcs shows the status of the mutex and semaphores <img src = "Documentation/ipcs.png" width="500" > </p>
 </body>
 
 <body>
-<p align = center>
-<img src = "Documentation/ps_command.png" width="500" >
-  <p align="center"> Ps displays the CPU usage </p>
-</p>
+<p align = center>  Ps displays the thread PID, CPU usage and the state<img src = "Documentation/ps_command.png" width="500" ></p>
 </body>
