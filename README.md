@@ -3,7 +3,7 @@ A custom RTOS framework for the TM4C MCU which includes custom implementation of
 
 ## Shell Interface
 <p align = center>
-<img src = "Documentation/Meminfo.png" width="500" >
+<img src = "Documentation/meminfo.png" width="500" >
 </p>
 
 <p align = center>
