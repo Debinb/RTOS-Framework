@@ -1,5 +1,7 @@
 # RTOS
 A custom RTOS framework for the TM4C MCU which includes custom implementation of malloc and free, priority-based scheduling, mutexes and semaphores and thread management.
+<p align = center> <img src = "Documentation/rtos.jpg" width="300" > </p>
+<p align = center> Each LEDs represents the running threads and each buttons executes a task. </p>
 
 ## Features 
 - **Priority-Based Scheduling:** Lets user toggle priority scheduling for the threads, where level 0 is the highest priority and level 15 is the lowest. By default, there are 10 threads running with Idle being the lowest priority.
